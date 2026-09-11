@@ -438,7 +438,7 @@ pip install "enterprise-claude-kit[cli]"
 
 **Development**:
 ```bash
-git clone https://github.com/your-org/enterprise-claude-kit
+git clone https://github.com/sairajboddula/enterprise-claude-kit
 cd enterprise-claude-kit
 pip install -e ".[dev]"
 pytest          # 66 tests
@@ -519,6 +519,6 @@ pre-commit install   # runs ruff + mypy on every commit
 
 Built for the engineers who deploy AI in the real world, not just in demos.
 
-**[⭐ Star this repo](https://github.com/your-org/enterprise-claude-kit)** if it saves you from rebuilding this layer yourself.
+**[⭐ Star this repo](https://github.com/sairajboddula/enterprise-claude-kit)** if it saves you from rebuilding this layer yourself.
 
 </div>

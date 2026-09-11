@@ -45,15 +45,16 @@ dev = [
 ecl = "enterprise_claude.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/enterprise-claude-kit/enterprise-claude-kit"
-Documentation = "https://enterprise-claude-kit.readthedocs.io"
-"Bug Tracker" = "https://github.com/enterprise-claude-kit/enterprise-claude-kit/issues"
+Homepage = "https://github.com/sairajboddula/enterprise-claude-kit"
+Documentation = "https://github.com/sairajboddula/enterprise-claude-kit#readme"
+"Bug Tracker" = "https://github.com/sairajboddula/enterprise-claude-kit/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["enterprise_claude"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 
 [tool.ruff]
