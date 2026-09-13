@@ -61,6 +61,21 @@ testpaths = ["tests"]
 line-length = 100
 target-version = "py311"
 
+[tool.coverage.run]
+source = ["enterprise_claude"]
+omit = [
+  "enterprise_claude/cli.py",   # CLI requires a real terminal; tested manually
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "@(abc\\.)?abstractmethod",
+  "if __name__ == .__main__.:",
+]
+
 [tool.mypy]
 python_version = "3.11"
 strict = true
