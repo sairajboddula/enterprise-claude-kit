@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "enterprise-claude-kit"
-version = "0.1.1"
+version = "0.1.2"
 description = "Governance + orchestration framework wrapping the Anthropic Claude API for enterprise deployments"
 readme = "README.md"
 license = { text = "MIT" }
@@ -40,9 +40,13 @@ dev = [
   "ruff>=0.4",
   "mypy>=1.10",
 ]
+mcp-server = [
+  "mcp>=1.0.0",   # Model Context Protocol Python SDK
+]
 
 [project.scripts]
 ecl = "enterprise_claude.cli:app"
+ecl-mcp = "enterprise_claude.mcp_server:main"
 
 [project.urls]
 Homepage = "https://github.com/sairajboddula/enterprise-claude-kit"
@@ -64,7 +68,8 @@ target-version = "py311"
 [tool.coverage.run]
 source = ["enterprise_claude"]
 omit = [
-  "enterprise_claude/cli.py",   # CLI requires a real terminal; tested manually
+  "enterprise_claude/cli.py",        # CLI requires a real terminal; tested manually
+  "enterprise_claude/mcp_server.py", # MCP server requires a live stdio MCP client
 ]
 
 [tool.coverage.report]

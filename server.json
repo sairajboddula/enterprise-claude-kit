@@ -1,0 +1,115 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.sairajboddula/enterprise-claude-kit",
+  "title": "Enterprise Claude Kit",
+  "description": "Governance layer for Claude API: PII filtering, SHA-256 audit trail, cost monitoring, wave rollout, and 10 enterprise connectors (GitHub, Jira, Slack, Confluence, SharePoint, PostgreSQL, ServiceNow, Salesforce, Teams, filesystem).",
+  "version": "0.1.2",
+  "websiteUrl": "https://github.com/sairajboddula/enterprise-claude-kit",
+  "repository": {
+    "url": "https://github.com/sairajboddula/enterprise-claude-kit",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "name": "enterprise-claude-kit",
+      "identifier": "enterprise-claude-kit",
+      "version": "0.1.2",
+      "runtimeArguments": [
+        {
+          "type": "positional",
+          "value": "-m",
+          "order": 0
+        },
+        {
+          "type": "positional",
+          "value": "enterprise_claude.mcp_server",
+          "order": 1
+        }
+      ],
+      "transport": {
+        "type": "stdio",
+        "command": "python"
+      },
+      "installInstructions": "pip install 'enterprise-claude-kit[mcp-server]'",
+      "environmentVariables": [
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "description": "Anthropic API key for Claude API access",
+          "required": true
+        },
+        {
+          "name": "GITHUB_TOKEN",
+          "description": "GitHub personal access token (for GitHub connector)",
+          "required": false
+        },
+        {
+          "name": "JIRA_URL",
+          "description": "Jira instance URL, e.g. https://your-org.atlassian.net (for Jira connector)",
+          "required": false
+        },
+        {
+          "name": "JIRA_TOKEN",
+          "description": "Jira API token (for Jira connector)",
+          "required": false
+        },
+        {
+          "name": "JIRA_EMAIL",
+          "description": "Jira account email (for Jira connector)",
+          "required": false
+        },
+        {
+          "name": "SLACK_BOT_TOKEN",
+          "description": "Slack bot OAuth token (for Slack connector)",
+          "required": false
+        },
+        {
+          "name": "POSTGRES_CONNECTION_STRING",
+          "description": "PostgreSQL connection string (for PostgreSQL connector)",
+          "required": false
+        },
+        {
+          "name": "CONFLUENCE_URL",
+          "description": "Confluence instance URL (for Confluence connector)",
+          "required": false
+        },
+        {
+          "name": "CONFLUENCE_TOKEN",
+          "description": "Confluence API token (for Confluence connector)",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "connectors": [
+        "github",
+        "jira",
+        "slack",
+        "confluence",
+        "sharepoint",
+        "postgres",
+        "servicenow",
+        "salesforce",
+        "teams",
+        "filesystem"
+      ],
+      "governance_features": [
+        "pii_filtering",
+        "sha256_audit_trail",
+        "daily_budget_enforcement",
+        "wave_gated_rollout",
+        "gxp_21_cfr_part_11",
+        "soc2_hipaa_ready"
+      ],
+      "compliance_standards": [
+        "21 CFR Part 11",
+        "SOC 2",
+        "HIPAA"
+      ],
+      "license": "MIT",
+      "python_requires": ">=3.11"
+    }
+  }
+}
