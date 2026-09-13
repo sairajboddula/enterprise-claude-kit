@@ -6,6 +6,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/enterprise-claude-kit?color=0284c7&label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/enterprise-claude-kit/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-0284c7?logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![CI](https://github.com/sairajboddula/enterprise-claude-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/sairajboddula/enterprise-claude-kit/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-10b981)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-66%20passing-10b981?logo=pytest&logoColor=white)](tests/)
 
@@ -432,22 +433,48 @@ tests/                          # 66 pytest tests, all passing
 
 ---
 
+## Changelog
+
+### v0.1.1 — 2026-09-13
+- Architecture diagram now renders correctly on PyPI (mermaid.ink image)
+- CI lint job fixed — package deps installed before mypy type-check
+- CI test coverage threshold corrected; CLI excluded from measurement
+- `asyncio_default_fixture_loop_scope` configured to silence pytest-asyncio deprecation
+- All repo URLs corrected to `sairajboddula/enterprise-claude-kit`
+
+### v0.1.0 — 2026-09-12
+- Initial public release
+- GovernanceLayer with PII detection, blocked keywords, GxP mode, pre/post hooks
+- AgentOrchestrator with model tier abstraction (default / batch / gated)
+- TokenMonitor with SQLite-backed cost tracking and async budget alerts
+- AuditLogger with append-only SHA-256 tamper-detection log
+- AdoptionTracker with wave-gated rollout and literacy scoring
+- MCP Connector Registry with 10 pre-built connectors
+- `ecl` CLI for cost, audit, wave, and connector management
+- 66 pytest tests across governance, orchestrator, and token monitor
+
+---
+
 ## Contributing
 
 Pull requests are welcome. Please:
 
-1. **Fork** and create a feature branch
-2. **Write tests** — the project maintains 100% coverage on core paths
+1. **Fork** and create a feature branch off `dev`
+2. **Write tests** — core modules (governance, orchestrator, token monitor) must stay covered
 3. **Pass the quality gate**: `pytest && mypy enterprise_claude/ && ruff check .`
-4. **Open a PR** — describe the problem you're solving and link any related issues
+4. **Open a PR** from `dev` → `main` — describe the problem you're solving
 
 For significant changes, open an issue first to discuss the design.
 
 ### Development setup
 
 ```bash
+git clone https://github.com/sairajboddula/enterprise-claude-kit
+cd enterprise-claude-kit
 pip install -e ".[dev]"
-pre-commit install   # runs ruff + mypy on every commit
+pytest                   # run 66 tests
+mypy enterprise_claude/  # type check
+ruff check .             # lint
 ```
 
 ---
