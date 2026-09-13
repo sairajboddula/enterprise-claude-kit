@@ -27,67 +27,10 @@ It's the production-grade layer that handles governance, cost control, audit tra
 
 ## Architecture
 
-```mermaid
-flowchart TD
-    APP(["🖥️  Your Application\n─────────────────────\nawait agent.run(prompt, user_id)"])
+<!-- Rendered via mermaid.ink — displays on GitHub, PyPI, and all Markdown viewers -->
+![Architecture diagram](https://mermaid.ink/img/Zmxvd2NoYXJ0IFRECiAgICBBUFAoWyJZb3VyIEFwcGxpY2F0aW9uXG5hd2FpdCBhZ2VudC5ydW4ocHJvbXB0LCB1c2VyX2lkKSJdKQoKICAgIHN1YmdyYXBoIEVDSyBbImVudGVycHJpc2UtY2xhdWRlLWtpdCJdCiAgICAgICAgZGlyZWN0aW9uIFRECiAgICAgICAgc3ViZ3JhcGggT1JDSCBbIkFnZW50T3JjaGVzdHJhdG9yIl0KICAgICAgICAgICAgQUdUWyJOYW1lZCBBZ2VudCDCtyBzeXN0ZW1fcHJvbXB0IMK3IHBlcnNvbmEgwrcgdGllciJdCiAgICAgICAgZW5kCiAgICAgICAgc3ViZ3JhcGggUElQRUxJTkUgWyI1LVN0YWdlIEFzeW5jIFBpcGVsaW5lIl0KICAgICAgICAgICAgUzFbIuKRoCBHb3Zlcm5hbmNlTGF5ZXIgLSBQcmUtZmxpZ2h0XG5QSUkgwrcgYmxvY2tlZCBrZXl3b3JkcyDCtyBwcm9tcHQgbGVuZ3RoIl0KICAgICAgICAgICAgUzJbIuKRoSBDbGF1ZGUgQVBJXG5zb25uZXQgwrcgaGFpa3Ugwrcgb3B1cyJdCiAgICAgICAgICAgIFMzWyLikaIgR292ZXJuYW5jZUxheWVyIC0gUG9zdC1yZXNwb25zZVxuUElJIGluIG91dHB1dCDCtyBHeFAgY2l0YXRpb25zIMK3IGhvb2tzIl0KICAgICAgICAgICAgUzRbIuKRoyBUb2tlbk1vbml0b3JcbmNvc3QgdHJhY2tpbmcgwrcgYnVkZ2V0IGVuZm9yY2VtZW50IMK3IGFsZXJ0cyJdCiAgICAgICAgICAgIFM1WyLikaQgQXVkaXRMb2dnZXJcbmFwcGVuZC1vbmx5IMK3IFNIQS0yNTYgwrcgR3hQLXJlYWR5Il0KICAgICAgICAgICAgUzEgLS0+IFMyIC0tPiBTMyAtLT4gUzQgLS0+IFM1CiAgICAgICAgZW5kCiAgICAgICAgc3ViZ3JhcGggT1BTIFsiT3BlcmF0aW9uYWwgTGF5ZXIiXQogICAgICAgICAgICBkaXJlY3Rpb24gTFIKICAgICAgICAgICAgQVRbIkFkb3B0aW9uVHJhY2tlclxuV2F2ZSByb2xsb3V0IMK3IExpdGVyYWN5IHNjb3JpbmciXQogICAgICAgICAgICBNQ1BbIk1DUCBSZWdpc3RyeVxuR2l0SHViIMK3IEppcmEgwrcgU2xhY2sgKyA3IG1vcmUiXQogICAgICAgICAgICBDTElbImVjbCBDTElcbmNvc3QgwrcgYXVkaXQgwrcgd2F2ZXMiXQogICAgICAgIGVuZAogICAgICAgIHN1YmdyYXBoIERCIFsiU1FMaXRlIHBlcnNpc3RlbmNlIl0KICAgICAgICAgICAgZGlyZWN0aW9uIExSCiAgICAgICAgICAgIE1EWygibW9uaXRvci5kYiIpXQogICAgICAgICAgICBBRFsoImF1ZGl0LmRiIildCiAgICAgICAgICAgIFdEWygiYWRvcHRpb24uZGIiKV0KICAgICAgICBlbmQKICAgIGVuZAoKICAgIEVSUihbIkdvdmVybmFuY2VWaW9sYXRpb25cbkJ1ZGdldEV4Y2VlZGVkRXJyb3IiXSkKICAgIE9VVChbIlJ1blJlc3VsdFxuY29udGVudCDCtyBjb3N0X3VzZCDCtyB0b2tlbnMgwrcgZ292ZXJuYW5jZV9yZXN1bHQiXSkKCiAgICBBUFAgLS0+IE9SQ0gKICAgIE9SQ0ggLS0+IFMxCiAgICBTMSAtLSAiYmxvY2tlZCIgLS0+IEVSUgogICAgUzQgLS0gIm92ZXIgYnVkZ2V0IiAtLT4gRVJSCiAgICBTNSAtLT4gT1VUCiAgICBTNCAtLT4gTUQKICAgIFM1IC0tPiBBRAogICAgQVQgLS0+IFdECiAgICBDTEkgLS4gInJlYWRzIiAuLT4gTUQgJiBBRCAmIFdECiAgICBPUkNIIC0uICJ3YXZlLWdhdGluZyIgLi0+IEFUCiAgICBPUkNIIC0uICJ0b29sIGluamVjdGlvbiIgLi0+IE1DUA==)
 
-    subgraph ECK ["  enterprise-claude-kit  "]
-        direction TD
-
-        subgraph ORCH ["⚙️  AgentOrchestrator"]
-            AGT["Named Agent · system_prompt · persona · tier · MCP connectors"]
-        end
-
-        subgraph PIPELINE ["  5-Stage Async Pipeline — wraps every Claude call  "]
-            direction TB
-            S1["🛡️  ① GovernanceLayer  —  Pre-flight\nPII detection · blocked keywords · prompt-length guard · persona allowlist"]
-            S2["☁️  ② Claude API\nclaude-sonnet-4-6  ·  claude-haiku-4-5  ·  claude-opus-4-6"]
-            S3["🛡️  ③ GovernanceLayer  —  Post-response\nPII in output · GxP citation check · pre/post hooks"]
-            S4["💰  ④ TokenMonitor\ncost = tokens × price  ·  daily budget enforcement  ·  async alert callbacks"]
-            S5["📋  ⑤ AuditLogger\nappend-only SQLite  ·  SHA-256 checksum  ·  user-ID hashed  ·  GxP-ready"]
-            S1 --> S2 --> S3 --> S4 --> S5
-        end
-
-        subgraph OPS ["  Operational Layer  "]
-            direction LR
-            AT["📈  AdoptionTracker\nWave-gated rollout · Literacy scoring\nInactive-user detection"]
-            MCP["🔌  MCP Registry\nGitHub · Jira · Slack · Confluence\nSharePoint · PostgreSQL · +5 more"]
-            CLI["⌨️  ecl CLI\necl cost summary --days 7\necl audit query\necl waves list"]
-        end
-
-        subgraph DB ["  Zero-infra SQLite persistence  "]
-            direction LR
-            MD[("monitor.db\ncost records")]
-            AD[("audit.db\nevent trail")]
-            WD[("adoption.db\nwave state")]
-        end
-    end
-
-    ERR(["⛔  GovernanceViolation\n    BudgetExceededError\n    WaveGateError"])
-    OUT(["✅  RunResult\ncontent · cost_usd · input_tokens\noutput_tokens · governance_result"])
-
-    APP --> ORCH
-    ORCH --> S1
-    S1 -- "❌ PII / blocked keyword" --> ERR
-    S4 -- "❌ daily budget exceeded" --> ERR
-    S5 --> OUT
-    S4 --> MD
-    S5 --> AD
-    AT --> WD
-    CLI -. "reads" .-> MD & AD & WD
-    ORCH -. "wave-gated access" .-> AT
-    ORCH -. "injects tool definitions" .-> MCP
-
-    style APP  fill:#f0f9ff,stroke:#0284c7,color:#0c4a6e
-    style ERR  fill:#fef2f2,stroke:#dc2626,color:#991b1b
-    style OUT  fill:#f0fdf4,stroke:#16a34a,color:#14532d
-    style S1   fill:#fefce8,stroke:#ca8a04,color:#713f12
-    style S2   fill:#eff6ff,stroke:#3b82f6,color:#1e40af
-    style S3   fill:#fefce8,stroke:#ca8a04,color:#713f12
-    style S4   fill:#fff7ed,stroke:#ea580c,color:#7c2d12
-    style S5   fill:#f0fdf4,stroke:#16a34a,color:#14532d
-    style AGT  fill:#faf5ff,stroke:#7c3aed,color:#3b0764
-```
+> **[View interactive diagram on GitHub](https://github.com/sairajboddula/enterprise-claude-kit#architecture)**
 
 ---
 
