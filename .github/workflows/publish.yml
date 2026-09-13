@@ -1,18 +1,88 @@
 name: Publish to PyPI
 
+# Triggered when you create a GitHub Release (tag must start with v).
+# Flow:
+#   1. sync-version — extract version from tag, update pyproject.toml /
+#      server.json / README changelog, commit back to main [skip ci]
+#   2. test         — run the test suite against the updated main
+#   3. build        — build wheel + sdist from the updated main
+#   4. publish      — push to PyPI via OIDC Trusted Publisher (no secrets)
+
 on:
   release:
-    types: [published]   # Triggers when you create a GitHub Release
+    types: [published]
 
 jobs:
-  # ── 1. Run tests first ──────────────────────────────────────────────────────
+  # ── 1. Sync version files from the git tag ──────────────────────────────────
+  sync-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to push the version-bump commit back to main
+    outputs:
+      version: ${{ steps.extract.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main              # check out main (not the tag) so we can push back
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: extract
+        run: |
+          TAG="${{ github.ref_name }}"   # e.g. v0.1.2
+          VERSION="${TAG#v}"             # strip leading 'v' → 0.1.2
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Syncing version → $VERSION"
+
+      - name: Update pyproject.toml
+        run: |
+          VERSION="${{ steps.extract.outputs.version }}"
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" pyproject.toml
+          grep "^version" pyproject.toml   # confirm the change
+
+      - name: Update server.json
+        run: |
+          VERSION="${{ steps.extract.outputs.version }}"
+          # Update both the top-level version and the packages[].version
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/g" server.json
+          grep '"version"' server.json     # confirm the change
+
+      - name: Add changelog entry to README
+        run: |
+          VERSION="${{ steps.extract.outputs.version }}"
+          DATE=$(date -u +%Y-%m-%d)
+          ENTRY="### v${VERSION} — ${DATE}\n- See [release notes](https://github.com/sairajboddula/enterprise-claude-kit/releases/tag/v${VERSION})\n"
+          # Insert the new entry immediately after the "## Changelog" heading
+          sed -i "/^## Changelog/a \\n${ENTRY}" README.md
+
+      - name: Commit and push version bump
+        run: |
+          VERSION="${{ steps.extract.outputs.version }}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml server.json README.md
+          # Only commit if something actually changed
+          if git diff --staged --quiet; then
+            echo "Nothing changed — version already up to date"
+          else
+            git commit -m "chore: bump version to ${VERSION} [skip ci]"
+            git push origin main
+          fi
+
+  # ── 2. Run tests against the updated main ───────────────────────────────────
   test:
+    needs: sync-version
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.11", "3.12"]
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main    # pick up the version-bump commit
 
       - uses: actions/setup-python@v5
         with:
@@ -24,12 +94,15 @@ jobs:
       - name: Run tests
         run: pytest --cov=enterprise_claude --cov-report=term-missing
 
-  # ── 2. Build the distribution ───────────────────────────────────────────────
+  # ── 3. Build the distribution from updated main ─────────────────────────────
   build:
-    needs: test
+    needs: [sync-version, test]
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main    # build from the version-bumped commit, not the raw tag
 
       - uses: actions/setup-python@v5
         with:
@@ -47,7 +120,7 @@ jobs:
           name: dist
           path: dist/
 
-  # ── 3. Publish to PyPI via Trusted Publisher (OIDC — no secrets needed) ────
+  # ── 4. Publish to PyPI via Trusted Publisher (OIDC — no secrets needed) ─────
   publish:
     needs: build
     runs-on: ubuntu-latest
