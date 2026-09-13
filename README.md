@@ -434,6 +434,9 @@ tests/                          # 66 pytest tests, all passing
 ---
 
 ## Changelog
+n### v0.1.2 — 2026-09-13
+- See [release notes](https://github.com/sairajboddula/enterprise-claude-kit/releases/tag/v0.1.2)
+
 
 ### v0.1.1 — 2026-09-13
 - Architecture diagram now renders correctly on PyPI (mermaid.ink image)
